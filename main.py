@@ -58,5 +58,23 @@ test_end = dt.datetime.now()
 test_data = web.DataReader(company, 'yahoo', test_start, test_end)
 actual_prices = test_data['Close'].values
 
+total_dataset = pd.concat((data['Close'], test_data['Close']), axis=0)
+
+model_inputs = total_dataset[len(total_dataset) - len(test_data) - prediction_days:].value
+model_inputs = model_inputs.reshape(-1, 1)
+model_inputs = scaler.transform(model_inputs)
+
+# Make prediction on Test Data
+
+x_test = []
+
+for x in range(prediction_days, len(model_inputs)):
+    x_test.append(model_inputs[x-prediction_days:x, 0])
+    
+x_test = np.array(x_test)
+x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+
+
+
 
 
